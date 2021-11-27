@@ -1,4 +1,4 @@
-package com.rabbit.simplemodel;
+package com.rabbit.ps;
 
 import com.rabbit.util.ConnectionUtil;
 import com.rabbitmq.client.*;
@@ -6,13 +6,11 @@ import com.rabbitmq.client.*;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-/**
- * 简单的生产者消费者模型
+/** 消费者
  * @author suoyutian
- * @date 2021年11月26日 5:16 下午
+ * @date 2021年11月27日 2:51 下午
  */
-public class Recer {
-
+public class Recer2 {
 
     public static void main(String[] args) throws IOException, TimeoutException {
 
@@ -22,13 +20,17 @@ public class Recer {
         //创建信道
         Channel channel = connection.createChannel();
 
-        //3.从信道中获取信息
-        DefaultConsumer consumer = new DefaultConsumer(channel) {
+        //声明队列
+        channel.queueDeclare("test_exchange_fanout_queue2",false,false,false,null);
+        //绑定路由
+        channel.queueBind("test_exchange_fanout_queue2","test_exchange_fanout","");
+        DefaultConsumer consumer = new DefaultConsumer(channel){
             public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
-                String s = new String(body);
-                System.out.println(s);
+                String s =new String(body);
+                System.out.println("【消费者2】="+s);
             }
         };
-        channel.basicConsume("queue1", true, consumer);
+
+        channel.basicConsume("test_exchange_fanout_queue2",true,consumer);
     }
 }

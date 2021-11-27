@@ -7,11 +7,11 @@ import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 /**
- * 简单的生产者消费者模型
+ * 手动确认机制
  * @author suoyutian
  * @date 2021年11月26日 5:16 下午
  */
-public class Recer {
+public class RecerByAck {
 
 
     public static void main(String[] args) throws IOException, TimeoutException {
@@ -20,15 +20,18 @@ public class Recer {
         Connection connection = ConnectionUtil.getConnection();
 
         //创建信道
-        Channel channel = connection.createChannel();
+        final Channel channel = connection.createChannel();
 
         //3.从信道中获取信息
         DefaultConsumer consumer = new DefaultConsumer(channel) {
             public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
                 String s = new String(body);
                 System.out.println(s);
+                //手动确认
+                channel.basicAck(envelope.getDeliveryTag(),false);
+
             }
         };
-        channel.basicConsume("queue1", true, consumer);
+        channel.basicConsume("queue1", false, consumer);
     }
 }

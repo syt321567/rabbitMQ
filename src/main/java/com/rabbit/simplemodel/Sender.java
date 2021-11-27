@@ -7,7 +7,7 @@ import com.rabbitmq.client.Connection;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-/**
+/** 简单模式  点对点模式
  * @author suoyutian
  * @date 2021年11月26日 5:16 下午
  */
